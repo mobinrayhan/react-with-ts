@@ -1,3 +1,5 @@
+import { useCartContext } from "../store/cart-context";
+
 type ProductProps = {
   id: string;
   image: string;
@@ -10,9 +12,13 @@ export default function Product({
   image,
   title,
   price,
+  id,
   description,
 }: ProductProps) {
-  function handleAddToCart() {}
+  const { addToCart } = useCartContext();
+  function handleAddToCart() {
+    addToCart({ title, price, id, quantity: 1 });
+  }
 
   return (
     <article className="product">
