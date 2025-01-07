@@ -1,4 +1,9 @@
-import { createContext, PropsWithChildren, useContext, useState } from "react";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useReducer,
+} from "react";
 
 export type CartItem = {
   id: string;
@@ -25,59 +30,75 @@ const setCartItemsToLS = (cartItems: CartItem[]) => {
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cartItems));
 };
 
+const initialValue = {
+  cartItems: getCartItemsFromLS(),
+};
+
+type CartItemAction = {
+  type: "ADD_TO_CART" | "INCREMENT_QUANTITY" | "DECREMENT_QUANTITY";
+  payload: CartItem;
+};
+
+const cartReducer = (
+  { cartItems }: { cartItems: CartItem[] },
+  { type, payload }: CartItemAction
+) => {
+  switch (type) {
+    case "ADD_TO_CART":
+      const addedItems = cartItems.some((item) => item.id === payload.id)
+        ? cartItems.map((item) =>
+            item.id === payload.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          )
+        : [...cartItems, payload];
+
+      setCartItemsToLS(addedItems);
+      return { cartItems: addedItems };
+
+    case "INCREMENT_QUANTITY":
+      const updatedItems = cartItems.map((item) =>
+        item.id === payload.id
+          ? {
+              ...item,
+              quantity: item.quantity + 1,
+            }
+          : item
+      );
+      setCartItemsToLS(updatedItems);
+      return { cartItems: updatedItems };
+    case "DECREMENT_QUANTITY":
+      const decrementedItems = cartItems
+        .map((item) =>
+          item.id === payload.id
+            ? {
+                ...item,
+                quantity: item.quantity - 1,
+              }
+            : item
+        )
+        .filter((item) => item.quantity !== 0);
+      setCartItemsToLS(decrementedItems);
+      return { cartItems: decrementedItems };
+
+    default:
+      return { cartItems };
+  }
+};
+
 const CartContextProvider = ({ children }: PropsWithChildren) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    const cartItems = getCartItemsFromLS();
-    return cartItems;
-  });
+  const [{ cartItems }, dispatch] = useReducer(cartReducer, initialValue);
 
   const ctxValue: CartContextValue = {
     cartItems,
     addToCart(cartItem: CartItem) {
-      setCartItems((prevItems) => {
-        const cartItems = prevItems.some((item) => item.id === cartItem.id)
-          ? prevItems.map((item) =>
-              item.id === cartItem.id
-                ? { ...item, quantity: item.quantity + 1 }
-                : item
-            )
-          : [...prevItems, cartItem];
-
-        setCartItemsToLS(cartItems);
-        return cartItems;
-      });
+      dispatch({ type: "ADD_TO_CART", payload: cartItem });
     },
-    handleIncrementQuantity(cartItem) {
-      setCartItems((prevItems) => {
-        const cartItems = prevItems.map((item) =>
-          item.id === cartItem.id
-            ? {
-                ...item,
-                quantity: item.quantity + 1,
-              }
-            : item
-        );
-
-        setCartItemsToLS(cartItems);
-        return cartItems;
-      });
+    handleIncrementQuantity(cartItem: CartItem) {
+      dispatch({ type: "INCREMENT_QUANTITY", payload: cartItem });
     },
-    handleDecrementQuantity(cartItem) {
-      setCartItems((prevItems) => {
-        const cartItems = prevItems
-          .map((item) =>
-            item.id === cartItem.id
-              ? {
-                  ...item,
-                  quantity: item.quantity - 1,
-                }
-              : item
-          )
-          .filter((item) => item.quantity !== 0);
-
-        setCartItemsToLS(cartItems);
-        return cartItems;
-      });
+    handleDecrementQuantity(cartItem: CartItem) {
+      dispatch({ type: "DECREMENT_QUANTITY", payload: cartItem });
     },
   };
 
