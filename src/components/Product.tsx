@@ -1,4 +1,5 @@
-import { useCartContext } from "../store/cart-context";
+import { addToCart } from "../store/cartSlice";
+import { useCartDispatch } from "../store/hook";
 
 type ProductProps = {
   id: string;
@@ -15,9 +16,10 @@ export default function Product({
   id,
   description,
 }: ProductProps) {
-  const { addToCart } = useCartContext();
+  const dispatch = useCartDispatch();
+
   function handleAddToCart() {
-    addToCart({ title, price, id, quantity: 1 });
+    dispatch(addToCart({ id, price, title, quantity: 1 }));
   }
 
   return (

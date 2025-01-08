@@ -11,6 +11,7 @@ export type CartItem = {
   quantity: number;
   price: number;
 };
+
 type CartContextValue = {
   cartItems: CartItem[];
   addToCart: (cartItem: CartItem) => void;

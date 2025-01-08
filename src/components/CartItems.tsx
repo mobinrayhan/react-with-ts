@@ -4,9 +4,6 @@ export default function CartItems() {
   const { cartItems, handleDecrementQuantity, handleIncrementQuantity } =
     useCartContext();
 
-  // const handleRemoveFromCart = (id: string) => {};
-  // const handleAddToCart = (item: CartItem) => {};
-
   const formattedTotalPrice = cartItems
     .reduce((prevPrice, cart) => prevPrice + +cart.price * cart.quantity, 0)
     .toFixed(2);
