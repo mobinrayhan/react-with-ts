@@ -1,8 +1,10 @@
 import { useCartContext } from "../store/cart-context";
+import { decrementQuantity, incrementQuantity } from "../store/cartSlice";
+import { useCartDispatch } from "../store/hook";
 
 export default function CartItems() {
-  const { cartItems, handleDecrementQuantity, handleIncrementQuantity } =
-    useCartContext();
+  const { cartItems } = useCartContext();
+  const dispatch = useCartDispatch();
 
   const formattedTotalPrice = cartItems
     .reduce((prevPrice, cart) => prevPrice + +cart.price * cart.quantity, 0)
@@ -25,11 +27,11 @@ export default function CartItems() {
                     <span> ({formattedPrice})</span>
                   </div>
                   <div className="cart-item-actions">
-                    <button onClick={() => handleDecrementQuantity(item)}>
+                    <button onClick={() => dispatch(decrementQuantity(item))}>
                       -
                     </button>
                     <span>{item.quantity}</span>
-                    <button onClick={() => handleIncrementQuantity(item)}>
+                    <button onClick={() => dispatch(incrementQuantity(item))}>
                       +
                     </button>
                   </div>
