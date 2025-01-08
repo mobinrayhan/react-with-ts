@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-import { useCartContext } from "../store/cart-context.tsx";
+import { useCartSelector } from "../store/hook.ts";
 import Cart from "./Cart.tsx";
 
 export default function Header() {
   const [cartIsVisible, setCartIsVisible] = useState(false);
-  const { cartItems } = useCartContext();
+  const cartItems = useCartSelector((state) => state.cart.cartItems);
 
   function handleOpenCartClick() {
     setCartIsVisible(true);

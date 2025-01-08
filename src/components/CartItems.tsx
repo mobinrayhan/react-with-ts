@@ -1,9 +1,8 @@
-import { useCartContext } from "../store/cart-context";
 import { decrementQuantity, incrementQuantity } from "../store/cartSlice";
-import { useCartDispatch } from "../store/hook";
+import { useCartDispatch, useCartSelector } from "../store/hook";
 
 export default function CartItems() {
-  const { cartItems } = useCartContext();
+  const cartItems = useCartSelector((state) => state.cart.cartItems);
   const dispatch = useCartDispatch();
 
   const formattedTotalPrice = cartItems

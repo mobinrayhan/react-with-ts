@@ -8,3 +8,4 @@ export const store = configureStore({
 });
 
 export type CartDispatch = typeof store.dispatch;
+export type CartSelector = ReturnType<typeof store.getState>;
